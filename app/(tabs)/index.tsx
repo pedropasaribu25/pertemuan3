@@ -1,98 +1,168 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  ScrollView, 
+  Image, 
+  useWindowDimensions, 
+  ImageSourcePropType,
+  SafeAreaView 
+} from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// Interface untuk tipe data props Card
+interface ProductProps {
+  name: string;
+  price: string;
+  imageSource: ImageSourcePropType;
+  hasBadge?: boolean;
+}
 
-export default function HomeScreen() {
+export default function TechGearsStore() {
+  const { width } = useWindowDimensions();
+  
+  // Menghitung lebar card: (Lebar Layar - (Padding kiri kanan + Gap tengah)) / 2
+  const cardWidth = (width - 50) / 2;
+
+  // Komponen Card Produk
+  const ProductCard = ({ name, price, imageSource, hasBadge }: ProductProps) => (
+    <View style={[styles.card, { width: cardWidth }]}>
+      {/* Badge Melayang (Absolute) */}
+      {hasBadge && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>OFF</Text>
+        </View>
+      )}
+      
+      {/* Gambar Produk Lokal */}
+      <Image source={imageSource} style={styles.productImage} resizeMode="contain" />
+      
+      <View style={styles.productInfo}>
+        <Text style={styles.productName} numberOfLines={1}>{name}</Text>
+        <Text style={styles.productPrice}>{price}</Text>
+      </View>
+    </View>
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        {/* HEADER: Berada di tengah (Column) */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>TechGears Store</Text>
+          <Text style={styles.headerSubtitle}>Premium Tech Gear Only</Text>
+        </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* PRODUCT GRID: Baris 1 */}
+        <View style={styles.row}>
+          <ProductCard 
+            name="Gaming Mouse" 
+            price="Rp 450.000" 
+            hasBadge={true} 
+            imageSource={require('../../assets/images/mouse.jpg')} 
+          />
+          <ProductCard 
+            name="Keyboard" 
+            price="Rp 1.200.000" 
+            imageSource={require('../../assets/images/keyboard.jpg')} 
+          />
+        </View>
+
+        {/* PRODUCT GRID: Baris 2 */}
+        <View style={styles.row}>
+          <ProductCard 
+            name="Monitor 4K" 
+            price="Rp 4.500.000" 
+            imageSource={require('../../assets/images/monitor.png')} 
+          />
+          <ProductCard 
+            name="USB-C Hub" 
+            price="Rp 300.000" 
+            imageSource={require('../../assets/images/headset.jpg')} 
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  // Header sesuai Mandatory Requirements
+  header: {
+    paddingVertical: 30,
+    backgroundColor: '#1A1A1A',
+    flexDirection: 'column', // Wajib column
+    alignItems: 'center',    // Biar teks ke tengah
+    justifyContent: 'center',
+    marginBottom: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  headerSubtitle: {
+    color: '#BBBBBB',
+    marginTop: 5,
+    fontSize: 14,
+  },
+  // Grid System menggunakan Row
+  row: {
+    flexDirection: 'row',     // Wajib row untuk baris produk
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 15,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    padding: 12,
+    position: 'relative',     // Wajib untuk posisi Absolute Badge
+    // Shadow agar rapi
+    elevation: 4,             
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  productImage: {
+    width: '100%',
+    height: 120,
+    marginBottom: 10,
+  },
+  productInfo: {
+    alignItems: 'flex-start',
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  productPrice: {
+    fontSize: 13,
+    color: '#007AFF',
+    marginTop: 4,
+    fontWeight: '600',
+  },
+  // Badge Absolute sesuai Mandatory Requirements
+  badge: {
+    position: 'absolute',    // Wajib absolute
+    top: 10,
+    right: 10,
+    backgroundColor: '#E74C3C',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    zIndex: 10,              // Memastikan badge di atas gambar
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '900',
   },
 });
